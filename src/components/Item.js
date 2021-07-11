@@ -1,19 +1,17 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
-function Item() {
+function Item({ name, date, expires, daysLeft, onPress }) {
   return (
-    <View style={styles.itemBox}>
+    <TouchableOpacity style={styles.itemBox} onPress={onPress}>
       <View style={styles.nameArea}>
-        <Text style={styles.itemName}>
-          BETTY WHITE'S WHITE CHOCOLATE PUDDING
-        </Text>
+        <Text style={styles.itemName}>{name}</Text>
       </View>
       <View style={styles.infoArea}>
-        <Text style={styles.itemInfo}>JUN 27 2021</Text>
-        <Text style={styles.itemInfo}>3 Days Left</Text>
+        <Text style={styles.itemInfo}>{date}</Text>
+        <Text style={styles.itemInfo}>{daysLeft} Day(s) Left</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

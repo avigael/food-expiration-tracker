@@ -3,14 +3,13 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TextInput,
   Image,
   TouchableOpacity,
 } from "react-native";
-import Item from "../components/Item";
+import ItemList from "../components/ItemList";
 
-function HomeScreen({ navigation }) {
+const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Search Bar */}
@@ -38,27 +37,11 @@ function HomeScreen({ navigation }) {
       </View>
       {/* Items */}
       <View style={styles.itemsArea}>
-        <ScrollView>
-          {/* EXPIRED */}
-          <Text style={styles.areaTitle}>Expired</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Edit")}>
-            <Item></Item>
-          </TouchableOpacity>
-          {/* EXPIRING SOON */}
-          <Text style={styles.areaTitle}>Expiring Soon</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Edit")}>
-            <Item></Item>
-          </TouchableOpacity>
-          {/* ALL ITEMS */}
-          <Text style={styles.areaTitle}>All Items</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Edit")}>
-            <Item></Item>
-          </TouchableOpacity>
-        </ScrollView>
+        <ItemList navigation={navigation} />
       </View>
       {/* Add an Item */}
       <View style={{ height: 60, flexDirection: "column-reverse" }}>
-        <TouchableOpacity onPress={() => navigation.navigate("Edit")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Create")}>
           <View style={styles.inputBar}>
             <Image
               source={require("../assets/icons/light/plus.png")}
@@ -70,7 +53,7 @@ function HomeScreen({ navigation }) {
       </View>
     </View>
   );
-}
+};
 
 export default HomeScreen;
 

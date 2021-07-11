@@ -8,16 +8,16 @@ import {
   TextInput,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { editItem } from "../redux/actions";
+import { addItem } from "../redux/actions";
 
-function EditScreen({ navigation, route }) {
-  const [name, setName] = useState(route.params.name);
-  const [date, setDate] = useState(route.params.date);
-  const [expires, setExpires] = useState(route.params.expires);
-  const [daysLeft, setDaysLeft] = useState(route.params.daysLeft);
-  const key = route.params.key;
+function CreateScreen({ navigation }) {
+  const [name, setName] = useState("");
+  const [date, setDate] = useState("MM/DD/YYYY");
+  const [expires, setExpires] = useState(true);
+  const [daysLeft, setDaysLeft] = useState(0);
   const dispatch = useDispatch();
-  const updateItem = (item) => dispatch(editItem(item));
+  const submitItem = (item) => dispatch(addItem(item));
+
   return (
     <View style={styles.container}>
       {/* Nav Bar */}
@@ -29,7 +29,7 @@ function EditScreen({ navigation, route }) {
               style={styles.icon}
             />
           </TouchableOpacity>
-          <Text style={styles.inputText}>Edit Item</Text>
+          <Text style={styles.inputText}>Add Item</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Menu")}>
             <Image
               source={require("../assets/icons/light/menu.png")}
@@ -48,7 +48,11 @@ function EditScreen({ navigation, route }) {
           </View>
           <View style={styles.infoArea}>
             <Text style={styles.itemInfo}>{date}</Text>
-            <Text style={styles.itemInfo}>3 Days Left</Text>
+            {expires ? (
+              <Text style={styles.itemInfo}>{daysLeft} Day(s) Left</Text>
+            ) : (
+              <Text style={styles.itemInfo}></Text>
+            )}
           </View>
         </View>
         {/* Input Name */}
@@ -109,11 +113,11 @@ function EditScreen({ navigation, route }) {
             <Text
               style={styles.buttonText}
               onPress={() => {
-                updateItem({ key, name, date, expires, daysLeft });
+                submitItem({ name, date, expires, daysLeft });
                 navigation.goBack();
               }}
             >
-              UPDATE
+              CREATE
             </Text>
           </TouchableOpacity>
         </View>
@@ -122,7 +126,7 @@ function EditScreen({ navigation, route }) {
   );
 }
 
-export default EditScreen;
+export default CreateScreen;
 
 const styles = StyleSheet.create({
   container: {
