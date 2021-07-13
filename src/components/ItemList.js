@@ -5,7 +5,6 @@ import Item from "./Item";
 
 const ItemList = ({ navigation }) => {
   const items = useSelector((state) => state.itemReducer.itemList);
-  console.log(items);
   return (
     <FlatList
       style={styles.container}

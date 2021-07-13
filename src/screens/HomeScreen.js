@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,50 +6,110 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
+import { useSelector } from "react-redux";
 import ItemList from "../components/ItemList";
+import SearchList from "../components/SearchList";
 
 const HomeScreen = ({ navigation }) => {
+  const theme = useSelector((state) => state.itemReducer.theme);
+  const settings = useSelector((state) => state.itemReducer.settings);
+  const [activeSearch, setActiveSearch] = useState(false);
+
   return (
-    <View style={styles.container}>
-      {/* Search Bar */}
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.PRIMARY_BACKGROUND_COLOR },
+      ]}
+    >
+      {/* STATUS BAR */}
+      <StatusBar barStyle={theme.STATUS_BAR_STYLE} />
+      {/* SEARCH BAR */}
       <View style={{ height: 60 }}>
-        <View style={styles.inputBar}>
-          <TouchableOpacity onPress={() => alert("Search Icon Pressed")}>
-            <Image
-              source={require("../assets/icons/light/search.png")}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
+        <View
+          style={[styles.inputBar, { borderColor: theme.PRIMARY_BORDER_COLOR }]}
+        >
+          {activeSearch ? (
+            <TouchableOpacity onPress={() => setActiveSearch(false)}>
+              <Image
+                source={
+                  settings.darkMode
+                    ? require("../assets/icons/dark/back.png")
+                    : require("../assets/icons/light/back.png")
+                }
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => setActiveSearch(true)}>
+              <Image
+                source={
+                  settings.darkMode
+                    ? require("../assets/icons/dark/search.png")
+                    : require("../assets/icons/light/search.png")
+                }
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+          )}
           <TextInput
-            style={styles.inputText}
-            placeholderTextColor={"black"}
+            style={[styles.inputText, { color: theme.PRIMARY_TEXT_COLOR }]}
+            placeholderTextColor={theme.PRIMARY_TEXT_COLOR}
             placeholder={"Search"}
-            onFocus={() => alert("Search TextInput Pressed")}
+            onFocus={() => setActiveSearch(true)}
+            onChangeText={() => setActiveSearch(true)}
           />
           <TouchableOpacity onPress={() => navigation.navigate("Menu")}>
             <Image
-              source={require("../assets/icons/light/menu.png")}
+              source={
+                settings.darkMode
+                  ? require("../assets/icons/dark/menu.png")
+                  : require("../assets/icons/light/menu.png")
+              }
               style={styles.icon}
             />
           </TouchableOpacity>
         </View>
       </View>
-      {/* Items */}
+      {/* ITEMS AREA */}
       <View style={styles.itemsArea}>
-        <ItemList navigation={navigation} />
-      </View>
-      {/* Add an Item */}
-      <View style={{ height: 60, flexDirection: "column-reverse" }}>
-        <TouchableOpacity onPress={() => navigation.navigate("Create")}>
-          <View style={styles.inputBar}>
-            <Image
-              source={require("../assets/icons/light/plus.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.inputText}>Add Item</Text>
-          </View>
-        </TouchableOpacity>
+        {activeSearch ? (
+          /* SEARCH RESULTS */
+          <SearchList navigation={navigation} />
+        ) : (
+          <>
+            {/* ITEMS */}
+            <ItemList navigation={navigation} />
+            {/* ADD AN ITEM */}
+            <TouchableOpacity onPress={() => navigation.navigate("Create")}>
+              <View
+                style={[
+                  styles.inputBar,
+                  { borderColor: theme.PRIMARY_BORDER_COLOR },
+                ]}
+              >
+                <Image
+                  source={
+                    settings.darkMode
+                      ? require("../assets/icons/dark/plus.png")
+                      : require("../assets/icons/light/plus.png")
+                  }
+                  style={styles.icon}
+                />
+                <Text
+                  style={[
+                    styles.inputText,
+                    { color: theme.PRIMARY_TEXT_COLOR },
+                  ]}
+                >
+                  Add Item
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );
@@ -62,16 +122,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 45,
-    backgroundColor: "white",
   },
   inputBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "white",
     borderRadius: 15,
     borderWidth: 3,
-    borderColor: "black",
     height: 50,
   },
   icon: {
@@ -91,6 +148,5 @@ const styles = StyleSheet.create({
   areaTitle: {
     fontFamily: "MenloBold",
     fontSize: 20,
-    color: "black",
   },
 });

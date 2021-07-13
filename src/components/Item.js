@@ -9,7 +9,11 @@ function Item({ name, date, expires, daysLeft, onPress }) {
       </View>
       <View style={styles.infoArea}>
         <Text style={styles.itemInfo}>{date}</Text>
-        <Text style={styles.itemInfo}>{daysLeft} Day(s) Left</Text>
+        {expires ? (
+          <Text style={styles.itemInfo}>{daysLeft} Day(s) Left</Text>
+        ) : (
+          <Text style={styles.itemInfo}></Text>
+        )}
       </View>
     </TouchableOpacity>
   );
