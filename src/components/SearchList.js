@@ -1,16 +1,19 @@
 import React from "react";
 import { StyleSheet, FlatList, Text } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Item from "./Item";
 
 const SearchList = ({ navigation }) => {
-  const items = useSelector((state) => state.itemReducer.itemList);
+  const searchItems = useSelector((state) => state.itemReducer.searchList);
+  const theme = useSelector((state) => state.itemReducer.theme);
   return (
     <>
-      <Text style={styles.areaTitle}>Search Results</Text>
+      <Text style={[styles.areaTitle, { color: theme.PRIMARY_TEXT_COLOR }]}>
+        Search Results
+      </Text>
       <FlatList
         style={styles.container}
-        data={items}
+        data={searchItems}
         keyExtractor={(item, index) => item.key.toString()}
         renderItem={(data) => (
           <Item
@@ -29,7 +32,6 @@ const SearchList = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
   },
   areaTitle: {
     fontSize: 19,

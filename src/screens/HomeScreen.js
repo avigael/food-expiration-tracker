@@ -8,13 +8,17 @@ import {
   TouchableOpacity,
   StatusBar,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { searchList } from "../redux/actions";
 import ItemList from "../components/ItemList";
 import SearchList from "../components/SearchList";
 
 const HomeScreen = ({ navigation }) => {
   const theme = useSelector((state) => state.itemReducer.theme);
   const settings = useSelector((state) => state.itemReducer.settings);
+  const dispatch = useDispatch();
+  const searchItems = (data) => dispatch(searchList(data));
+  const [searchText, setSearchText] = useState("");
   const [activeSearch, setActiveSearch] = useState(false);
 
   return (
@@ -32,7 +36,12 @@ const HomeScreen = ({ navigation }) => {
           style={[styles.inputBar, { borderColor: theme.PRIMARY_BORDER_COLOR }]}
         >
           {activeSearch ? (
-            <TouchableOpacity onPress={() => setActiveSearch(false)}>
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText("");
+                setActiveSearch(false);
+              }}
+            >
               <Image
                 source={
                   settings.darkMode
@@ -59,7 +68,12 @@ const HomeScreen = ({ navigation }) => {
             placeholderTextColor={theme.PRIMARY_TEXT_COLOR}
             placeholder={"Search"}
             onFocus={() => setActiveSearch(true)}
-            onChangeText={() => setActiveSearch(true)}
+            value={searchText}
+            onChangeText={(text) => {
+              setActiveSearch(true);
+              setSearchText(text.toUpperCase());
+              searchItems(text.toUpperCase());
+            }}
           />
           <TouchableOpacity onPress={() => navigation.navigate("Menu")}>
             <Image

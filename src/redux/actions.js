@@ -4,6 +4,7 @@ import {
   DELETE_ITEM,
   UPDATE_SETTINGS,
   CHANGE_THEME,
+  SEARCH_LIST,
 } from "./types";
 
 export const addItem = (item) => ({
@@ -29,4 +30,9 @@ export const updateSettings = (settings) => ({
 export const changeTheme = (theme) => ({
   type: CHANGE_THEME,
   data: theme,
+});
+
+export const searchList = (name) => ({
+  type: SEARCH_LIST,
+  name: name,
 });

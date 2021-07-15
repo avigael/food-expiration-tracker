@@ -8,7 +8,7 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { editItem, deleteItem } from "../redux/actions";
 
 function validateDate(date) {
@@ -44,15 +44,20 @@ function getDaysLeft(date) {
 }
 
 function EditScreen({ navigation, route }) {
-  const [name, setName] = useState(route.params.name);
-  const [date, setDate] = useState(route.params.date);
-  const [expires, setExpires] = useState(route.params.expires);
-  const [valid, setValid] = useState("black");
-  const [daysLeft, setDaysLeft] = useState(route.params.daysLeft);
-  const key = route.params.key;
+  // REDUX
   const dispatch = useDispatch();
   const updateItem = (item) => dispatch(editItem(item));
   const removeItem = (item) => dispatch(deleteItem(item));
+  const theme = useSelector((state) => state.itemReducer.theme);
+  const settings = useSelector((state) => state.itemReducer.settings);
+  // ITEM DETAILS
+  const [name, setName] = useState(route.params.name);
+  const [date, setDate] = useState(route.params.date);
+  const [expires, setExpires] = useState(route.params.expires);
+  const [daysLeft, setDaysLeft] = useState(route.params.daysLeft);
+  const key = route.params.key;
+  const [dateValid, setDateValid] = useState(true);
+  const [nameValid, setNameValid] = useState(true);
 
   const doubleCheckDelete = () =>
     Alert.alert("Are you sure you want to delete this item?", "", [
@@ -67,20 +72,37 @@ function EditScreen({ navigation, route }) {
     ]);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.PRIMARY_BACKGROUND_COLOR },
+      ]}
+    >
       {/* TOP NAV BAR */}
       <View style={{ height: 60 }}>
-        <View style={styles.inputBar}>
+        <View
+          style={[styles.inputBar, { borderColor: theme.PRIMARY_BORDER_COLOR }]}
+        >
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
-              source={require("../assets/icons/light/back.png")}
+              source={
+                settings.darkMode
+                  ? require("../assets/icons/dark/back.png")
+                  : require("../assets/icons/light/back.png")
+              }
               style={styles.icon}
             />
           </TouchableOpacity>
-          <Text style={styles.inputText}>Add Item</Text>
+          <Text style={[styles.inputText, { color: theme.PRIMARY_TEXT_COLOR }]}>
+            Add Item
+          </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Menu")}>
             <Image
-              source={require("../assets/icons/light/menu.png")}
+              source={
+                settings.darkMode
+                  ? require("../assets/icons/dark/menu.png")
+                  : require("../assets/icons/light/menu.png")
+              }
               style={styles.icon}
             />
           </TouchableOpacity>
@@ -88,7 +110,9 @@ function EditScreen({ navigation, route }) {
       </View>
       {/* EDIT SECTION */}
       <View style={styles.itemsArea}>
-        <Text style={styles.areaTitle}>Preview</Text>
+        <Text style={[styles.areaTitle, { color: theme.PRIMARY_TEXT_COLOR }]}>
+          Preview
+        </Text>
         {/* PREVIEW */}
         <View style={styles.itemBox}>
           <View style={styles.nameArea}>
@@ -97,103 +121,199 @@ function EditScreen({ navigation, route }) {
           <View style={styles.infoArea}>
             <Text style={styles.itemInfo}>{date}</Text>
             {expires ? (
-              <Text style={styles.itemInfo}>{daysLeft} Day(s) Left</Text>
+              <Text style={styles.itemInfo}>
+                {daysLeft} DAY{daysLeft == 1 ? "" : "S"} LEFT
+              </Text>
             ) : (
               <Text style={styles.itemInfo}></Text>
             )}
           </View>
         </View>
         {/* NAME INPUT */}
-        <Text style={styles.areaTitle}>Details</Text>
-        <View style={[styles.inputBar, { marginVertical: 5 }]}>
+        <Text style={[styles.areaTitle, { color: theme.PRIMARY_TEXT_COLOR }]}>
+          Details
+        </Text>
+        <View
+          style={
+            nameValid
+              ? [
+                  styles.inputBar,
+                  {
+                    borderColor: theme.PRIMARY_BORDER_COLOR,
+                    marginVertical: 5,
+                  },
+                ]
+              : [
+                  styles.inputBar,
+                  {
+                    borderColor: "red",
+                    marginVertical: 5,
+                  },
+                ]
+          }
+        >
           <Image
-            source={require("../assets/icons/light/food.png")}
+            source={
+              settings.darkMode
+                ? require("../assets/icons/dark/food.png")
+                : require("../assets/icons/light/food.png")
+            }
             style={styles.icon}
           />
           <TextInput
-            style={styles.inputText}
-            placeholderTextColor={"black"}
+            style={[styles.inputText, { color: theme.PRIMARY_TEXT_COLOR }]}
+            placeholderTextColor={theme.PRIMARY_TEXT_COLOR}
             placeholder={"Item Name"}
             value={name}
-            onChangeText={(name) => setName(name)}
+            onChangeText={(name) => {
+              setNameValid(true);
+              setName(name.toUpperCase());
+            }}
           />
         </View>
         {/* DATE INPUT */}
         <View
-          style={[styles.inputBar, { borderColor: valid, marginVertical: 5 }]}
+          style={
+            dateValid
+              ? [
+                  styles.inputBar,
+                  {
+                    borderColor: theme.PRIMARY_BORDER_COLOR,
+                    marginVertical: 5,
+                  },
+                ]
+              : [
+                  styles.inputBar,
+                  {
+                    borderColor: "red",
+                    marginVertical: 5,
+                  },
+                ]
+          }
         >
           <Image
-            source={require("../assets/icons/light/date.png")}
+            source={
+              settings.darkMode
+                ? require("../assets/icons/dark/date.png")
+                : require("../assets/icons/light/date.png")
+            }
             style={styles.icon}
           />
           <TextInput
-            style={[styles.inputText, { color: valid }]}
-            placeholderTextColor={valid}
+            style={[styles.inputText, { color: theme.PRIMARY_TEXT_COLOR }]}
+            placeholderTextColor={theme.PRIMARY_TEXT_COLOR}
             placeholder={"MM/DD/YYYY"}
             value={date}
             onChangeText={(date) => {
               setDate(date);
               setExpires(true);
               if (validateDate(date)) {
-                setValid("black");
+                setDateValid(true);
                 setDaysLeft(getDaysLeft(date));
                 if (date === "DOES NOT EXPIRE") {
                   setExpires(false);
                 }
               } else {
-                setValid("red");
+                setDateValid(false);
               }
             }}
           />
         </View>
         {/* NEVER EXPIRES BUTTON */}
         <TouchableOpacity
-          style={[styles.inputBar, { marginVertical: 5 }]}
+          style={[
+            styles.inputBar,
+            { borderColor: theme.PRIMARY_BORDER_COLOR, marginVertical: 5 },
+          ]}
           onPress={() => {
             setExpires(!expires);
             if (expires) {
               setDate("DOES NOT EXPIRE");
+              setDateValid(true);
             } else {
               setDate("");
             }
           }}
         >
           {expires ? (
-            <View style={styles.checkBox}></View>
+            <View
+              style={[
+                styles.checkBox,
+                { borderColor: theme.PRIMARY_BORDER_COLOR },
+              ]}
+            ></View>
           ) : (
-            <View style={[styles.checkBox, { backgroundColor: "lime" }]}></View>
+            <View
+              style={[
+                styles.checkBox,
+                {
+                  borderColor: theme.PRIMARY_BORDER_COLOR,
+                  backgroundColor: "lime",
+                },
+              ]}
+            ></View>
           )}
-          <Text style={styles.inputText}>Never Expires?</Text>
+          <Text style={[styles.inputText, { color: theme.PRIMARY_TEXT_COLOR }]}>
+            Never Expires?
+          </Text>
         </TouchableOpacity>
         {/* BUTTONS */}
         <View style={styles.buttonArea}>
+          {/* CANCEL BUTTON */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { borderColor: theme.PRIMARY_BORDER_COLOR, marginRight: 5 },
+            ]}
+            onPress={() => navigation.goBack()}
+          >
+            <Text
+              style={[styles.buttonText, { color: theme.PRIMARY_TEXT_COLOR }]}
+            >
+              CANCEL
+            </Text>
+          </TouchableOpacity>
+          {/* DELETE BUTTON */}
+          <TouchableOpacity
+            style={[
+              styles.button,
+              { borderColor: theme.PRIMARY_BORDER_COLOR, marginLeft: 5 },
+            ]}
+            onPress={doubleCheckDelete}
+          >
+            <Text
+              style={[styles.buttonText, { color: theme.PRIMARY_TEXT_COLOR }]}
+            >
+              DELETE
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonArea}>
           {/* CREATE BUTTON */}
           <TouchableOpacity
-            style={[styles.button, { marginBottom: 5 }]}
+            style={[
+              styles.button,
+              { borderColor: theme.PRIMARY_BORDER_COLOR, marginTop: 5 },
+            ]}
             onPress={() => {
               if (name !== "" && validateDate(date)) {
                 updateItem({ key, name, date, expires, daysLeft });
                 navigation.goBack();
+              } else {
+                if (name === "") {
+                  setNameValid(false);
+                }
+                if (!validateDate(date)) {
+                  setDateValid(false);
+                }
               }
             }}
           >
-            <Text style={styles.buttonText}>UPDATE</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.buttonArea}>
-          {/* CANCEL BUTTON */}
-          <TouchableOpacity
-            style={[styles.button, { marginRight: 5 }]}
-            onPress={() => navigation.goBack()}
-          >
-            <Text style={styles.buttonText}>CANCEL</Text>
-          </TouchableOpacity>
-          {/* DELETE BUTTON */}
-          <TouchableOpacity
-            style={[styles.button, { marginLeft: 5 }]}
-            onPress={doubleCheckDelete}
-          >
-            <Text style={styles.buttonText}>DELETE</Text>
+            <Text
+              style={[styles.buttonText, { color: theme.PRIMARY_TEXT_COLOR }]}
+            >
+              UPDATE
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -208,16 +328,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 45,
-    backgroundColor: "white",
   },
   inputBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
     borderRadius: 15,
     borderWidth: 3,
-    borderColor: "black",
     height: 50,
     paddingHorizontal: 15,
   },
@@ -238,10 +355,8 @@ const styles = StyleSheet.create({
   areaTitle: {
     fontFamily: "MenloBold",
     fontSize: 20,
-    color: "black",
   },
   itemBox: {
-    backgroundColor: "white",
     height: 60,
     borderRadius: 15,
     borderColor: "#B6B6B6",
@@ -276,7 +391,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 3,
     marginRight: 15,
-    backgroundColor: "white",
   },
   buttonArea: {
     flexDirection: "row",
@@ -288,8 +402,6 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 15,
     borderWidth: 3,
-    borderColor: "black",
-    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
   },

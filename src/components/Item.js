@@ -1,18 +1,52 @@
 import React from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
 
 function Item({ name, date, expires, daysLeft, onPress }) {
+  const theme = useSelector((state) => state.itemReducer.theme);
+  const settings = useSelector((state) => state.itemReducer.settings);
   return (
-    <TouchableOpacity style={styles.itemBox} onPress={onPress}>
+    <TouchableOpacity
+      style={
+        daysLeft <= settings.threshold && date != "DOES NOT EXPIRE"
+          ? [styles.itemBox, { borderColor: "red" }]
+          : [styles.itemBox, { borderColor: theme.PRIMARY_BORDER_COLOR }]
+      }
+      onPress={onPress}
+    >
       <View style={styles.nameArea}>
-        <Text style={styles.itemName}>{name}</Text>
+        <Text
+          style={
+            daysLeft <= settings.threshold && date != "DOES NOT EXPIRE"
+              ? [styles.itemName, { color: "red" }]
+              : [styles.itemName, { color: theme.PRIMARY_TEXT_COLOR }]
+          }
+        >
+          {name}
+        </Text>
       </View>
       <View style={styles.infoArea}>
-        <Text style={styles.itemInfo}>{date}</Text>
+        <Text
+          style={
+            daysLeft <= settings.threshold && date != "DOES NOT EXPIRE"
+              ? [styles.itemInfo, { color: "red" }]
+              : [styles.itemInfo, { color: theme.PRIMARY_TEXT_COLOR }]
+          }
+        >
+          {date}
+        </Text>
         {expires ? (
-          <Text style={styles.itemInfo}>{daysLeft} Day(s) Left</Text>
+          <Text
+            style={
+              daysLeft <= settings.threshold && date != "DOES NOT EXPIRE"
+                ? [styles.itemInfo, { color: "red" }]
+                : [styles.itemInfo, { color: theme.PRIMARY_TEXT_COLOR }]
+            }
+          >
+            {daysLeft} DAY{daysLeft == 1 ? "" : "S"} LEFT
+          </Text>
         ) : (
-          <Text style={styles.itemInfo}></Text>
+          <></>
         )}
       </View>
     </TouchableOpacity>
@@ -23,10 +57,8 @@ export default Item;
 
 const styles = StyleSheet.create({
   itemBox: {
-    backgroundColor: "white",
     height: 60,
     borderRadius: 15,
-    borderColor: "black",
     borderWidth: 3,
     marginVertical: 5,
     paddingVertical: 7,
@@ -38,7 +70,6 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontFamily: "MenloBold",
-    color: "black",
     fontSize: 16,
   },
   infoArea: {
@@ -49,7 +80,6 @@ const styles = StyleSheet.create({
   },
   itemInfo: {
     fontFamily: "MenloBold",
-    color: "black",
     fontSize: 14,
   },
 });

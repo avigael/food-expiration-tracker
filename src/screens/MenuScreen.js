@@ -93,42 +93,6 @@ function MenuScreen({ navigation }) {
             Dark Mode
           </Text>
         </TouchableOpacity>
-        {/* NOTIFICATIONS */}
-        <TouchableOpacity
-          style={[
-            styles.inputBar,
-            { borderColor: theme.PRIMARY_BORDER_COLOR, marginVertical: 5 },
-          ]}
-          onPress={() =>
-            changeSettings({
-              darkMode: settings.darkMode,
-              notification: !settings.notification,
-              threshold: settings.threshold,
-            })
-          }
-        >
-          {settings.notification ? (
-            <View
-              style={[
-                styles.checkBox,
-                {
-                  borderColor: theme.PRIMARY_BORDER_COLOR,
-                  backgroundColor: "lime",
-                },
-              ]}
-            ></View>
-          ) : (
-            <View
-              style={[
-                styles.checkBox,
-                { borderColor: theme.PRIMARY_BORDER_COLOR },
-              ]}
-            ></View>
-          )}
-          <Text style={[styles.inputText, { color: theme.PRIMARY_TEXT_COLOR }]}>
-            Notifications
-          </Text>
-        </TouchableOpacity>
         {/* THRESHOLD */}
         <Text
           style={[styles.thresholdText, { color: theme.PRIMARY_TEXT_COLOR }]}

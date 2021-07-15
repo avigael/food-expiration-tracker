@@ -4,14 +4,15 @@ import {
   DELETE_ITEM,
   UPDATE_SETTINGS,
   CHANGE_THEME,
+  SEARCH_LIST,
 } from "./types";
 import { lightTheme } from "../assets/theme";
 
 const initialState = {
   itemList: [],
+  searchList: [],
   settings: {
     darkMode: false,
-    notification: true,
     threshold: 4,
   },
   theme: lightTheme,
@@ -20,10 +21,11 @@ const initialState = {
 const itemReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_ITEM:
+      let key = Math.random();
       return {
         ...state,
         itemList: state.itemList.concat({
-          key: Math.random(),
+          key: key,
           name: action.data.name,
           date: action.data.date,
           expires: action.data.expires,
@@ -42,18 +44,27 @@ const itemReducer = (state = initialState, action) => {
             expires: action.data.expires,
             daysLeft: action.data.daysLeft,
           }),
+        searchList: state.searchList
+          .filter((item) => item.key !== action.data.key)
+          .concat({
+            key: action.data.key,
+            name: action.data.name,
+            date: action.data.date,
+            expires: action.data.expires,
+            daysLeft: action.data.daysLeft,
+          }),
       };
     case DELETE_ITEM:
       return {
         ...state,
         itemList: state.itemList.filter((item) => item.key !== action.key),
+        searchList: state.searchList.filter((item) => item.key !== action.key),
       };
     case UPDATE_SETTINGS:
       return {
         ...state,
         settings: {
           darkMode: action.data.darkMode,
-          notification: action.data.notification,
           threshold: action.data.threshold,
         },
       };
@@ -62,6 +73,25 @@ const itemReducer = (state = initialState, action) => {
         ...state,
         theme: action.data,
       };
+    case SEARCH_LIST:
+      let found = false;
+      let searchItems = { ...state };
+      for (let i = 0; i < state.itemList.length; i++) {
+        if (state.itemList[i].name === action.name) {
+          searchItems.searchList = searchItems.searchList.concat({
+            key: state.itemList[i].key,
+            name: state.itemList[i].name,
+            date: state.itemList[i].date,
+            expires: state.itemList[i].expires,
+            daysLeft: state.itemList[i].daysLeft,
+          });
+          found = true;
+        }
+      }
+      if (!found) {
+        searchItems.searchList = [];
+      }
+      return searchItems;
     default:
       return state;
   }

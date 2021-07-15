@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, FlatList } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Item from "./Item";
 
 const ItemList = ({ navigation }) => {
